@@ -1,0 +1,40 @@
+recovery/
+├── Cargo.toml                  # workspace
+├── core/                       # Rust
+│   ├── Cargo.toml
+│   └── src/
+│       ├── main.rs             # CLI: parse args, chọn quick/deep, vòng lặp lệnh stdin
+│       ├── ipc.rs              # phát event NDJSON ra stdout, gom batch
+│       ├── model.rs            # FoundFile {id, name, kind, offset, size, source, confidence}
+│       ├── device/
+│       │   ├── mod.rs
+│       │   ├── info.rs         # lấy thông tin thiết bị, ghi Log_Info.txt
+│       │   └── reader.rs       # đọc raw theo sector, đệm, bỏ qua bad sector
+│       ├── fs/
+│       │   ├── mod.rs          # trait FileSystem { list_deleted(), read_chain() }
+│       │   ├── mbr.rs          # bảng phân vùng MBR
+│       │   ├── gpt.rs          # bảng phân vùng GPT
+│       │   ├── fat.rs          # BPB, FAT table, dir entry, cluster chain FAT16/FAT32
+│       │   ├── exfat.rs        # exFAT: bitmap + dir entry set
+│       │   └── ntfs.rs         # MFT record, data runs, cờ in-use
+│       ├── carve/
+│       │   ├── mod.rs
+│       │   ├── signature.rs    # bảng signature header/footer, quét đa mẫu (aho-corasick)
+│       │   ├── jpeg.rs         # xác định kích thước: marker walk tới EOI
+│       │   ├── mp4.rs          # duyệt box (ftyp/moov/mdat) để tính kích thước
+│       │   └── tiff.rs          # RIFF size
+│       ├── scan/
+│       │   ├── quick.rs        # quét nhanh
+│       │   └── deep.rs         # quét sâu
+│       └── recover/
+│           ├── mod.rs
+│           └── writer.rs       # ghi file khôi phục ra đĩa khác
+└── gui/
+    ├── pyproject.toml
+    └── app/
+        ├── main.py
+        ├── core_client.py      # spawn Rust, đọc event, gửi lệnh
+        ├── file_model.py       # QAbstractTableModel
+        └── views/
+            ├── scan_view.py
+            └── recover_view.py
